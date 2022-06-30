@@ -427,9 +427,9 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-          apk add --update ansible
-          pip install awscli
-          apk add --update --no-cache tar gzip nodejs npm curl
+            apk add --update ansible
+            pip install awscli
+            apk add --update --no-cache tar gzip nodejs npm curl
 
         # Backend smoke test:
         # Retrieve the back-end IP address that you saved in an earlier job.
@@ -437,21 +437,21 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-          export BACKEND_IP=$(aws ec2 describe-instances \
-            --query 'Reservations[*].Instances[*].PublicIpAddress' \
-            --filters "Name=instance-state-name,Values=running" \
-            --output text)
+            export BACKEND_IP=$(aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=instance-state-name,Values=running" \
+              --output text)
 
 
-          export API_URL="http://${BACKEND_IP}:3030"
-          echo $API_URL
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo $API_URL
 
-          if curl "${API_URL}/api/status" | grep "ok"
-          then
-            return 0
-          else
-            return 1
-          fi
+            if curl "${API_URL}/api/status" | grep "ok"
+            then
+              return 0
+            else
+              return 1
+            fi
 
         # Check the front-end to make sure it includes a word or two that proves it is working properly.
       - run:
