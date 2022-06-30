@@ -207,38 +207,38 @@ jobs:
     docker:
           - image: python:3.7-alpine3.11
 
-        steps:
-          # Checkout code from git.
-          - checkout
+    steps:
+      # Checkout code from git.
+      - checkout
 
-            # Add the SSH key fingerprint to job so that Ansible will 
-            # have access to the EC2 instance via SSH.
-          - add_ssh_keys:
-              fingerprints: ["c4:11:3c:85:fc:fa:08:be:f0:98:9e:ab:f9:29:74:87"]
+        # Add the SSH key fingerprint to job so that Ansible will 
+        # have access to the EC2 instance via SSH.
+      - add_ssh_keys:
+          fingerprints: ["c4:11:3c:85:fc:fa:08:be:f0:98:9e:ab:f9:29:74:87"]
 
-            # Attach the "workspace" to the job so that you have access 
-            # to all the files you need 
-          - attach_workspace:
-              at: ~/
+        # Attach the "workspace" to the job so that you have access 
+        # to all the files you need 
+      - attach_workspace:
+          at: ~/
 
-            # Install dependencies for the next step, such as tar, gzip, ansible, or awscli.
-          - run:
-              name: Install Ansible
-              command: |
-                apk add --update ansible
-                pip install awscli
+        # Install dependencies for the next step, such as tar, gzip, ansible, or awscli.
+      - run:
+          name: Install Ansible
+          command: |
+            apk add --update ansible
+            pip install awscli
 
 
-            # Configure server: finish the Ansible playbook .circleci/ansible/configure-server.yml 
-          - run:
-              name: Configure server
-              command: |
-                cd .circleci/ansible
-                ansible-playbook -i inventory.txt configure-server.yml
+        # Configure server: finish the Ansible playbook .circleci/ansible/configure-server.yml 
+      - run:
+          name: Configure server
+          command: |
+            cd .circleci/ansible
+            ansible-playbook -i inventory.txt configure-server.yml
 
-              # Destroy-environment on fail
-          - destroy-environment:
-              workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          # Destroy-environment on fail
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
 
 
