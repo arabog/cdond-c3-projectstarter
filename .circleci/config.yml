@@ -1,6 +1,23 @@
 version: 2.1
 
+orbs:
+  slack: circleci/slack@4.10.1
+  aws-cli: circleci/aws-cli@3.1.1
+
 commands:
+  destroy-environment:
+    description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+    parameters:
+      workflow_id:
+        type: string
+    steps:
+      - run:
+          name: Destroy environments
+          when: on_fail
+          command: |
+            aws cloudformation delete-stack --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+            aws cloudformation delete-stack --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
+
   
             
 jobs:
@@ -126,6 +143,109 @@ jobs:
             npm audit fix --force --audit-level=critical
 
 
+  deploy-infrastructure:
+    # Select a Docker image that supports the AWS CLI, such as amazon/aws-cli.
+    docker:
+      - image: amazon/aws-cli
+
+    steps:
+        # Checkout code from git, and install tar and gzip
+      - checkout
+      - run:
+          name: Install tar and gzip
+          command: |
+              yum install -y tar gzip
+
+        # Ensure backend infrastructure exist
+      - run:
+          name: Ensure back-end infrastructure exists
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/backend.yml \
+              --tags Project=udapeople \
+              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
+
+        # Ensure frontend infrastructure exist
+      - run:
+          name: Ensure front-end infrastructure exist
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/frontend.yml \
+              --tags project=udapeople \
+              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
+
+
+        # Add the EC2 instance IP to the Ansible inventory
+      - run:
+          name: Add back-end ip to ansible inventory
+          command: |
+            aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:Project,Values=udapeople" \
+              --output text >> ~/project/.circleci/ansible/inventory.txt
+
+              cat ~/project/.circleci/ansible/inventory.txt
+
+
+          # persist the modified inventory file to the workspace 
+          # so that we can use that file in the future jobs.
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/.circleci/ansible/*
+
+
+          # Destroy-environment on fail
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
+
+  configure-infrastructure:
+    # Select a Docker image that supports Ansible
+    docker:
+          - image: python:3.7-alpine3.11
+
+        steps:
+          # Checkout code from git.
+          - checkout
+
+            # Add the SSH key fingerprint to job so that Ansible will 
+            # have access to the EC2 instance via SSH.
+          - add_ssh_keys:
+              fingerprints: ["c4:11:3c:85:fc:fa:08:be:f0:98:9e:ab:f9:29:74:87"]
+
+            # Attach the "workspace" to the job so that you have access 
+            # to all the files you need 
+          - attach_workspace:
+              at: ~/
+
+            # Install dependencies for the next step, such as tar, gzip, ansible, or awscli.
+          - run:
+              name: Install Ansible
+              command: |
+                apk add --update ansible
+                pip install awscli
+
+
+            # Configure server: finish the Ansible playbook .circleci/ansible/configure-server.yml 
+          - run:
+              name: Configure server
+              command: |
+                cd .circleci/ansible
+                ansible-playbook -i inventory.txt configure-server.yml
+
+              # Destroy-environment on fail
+          - destroy-environment:
+              workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
+
+
+
+
+
+
 # Add code to build/compile the front-end.
     
 
@@ -143,3 +263,9 @@ workflows:
           requires: [test-frontend]
       - scan-backend:
           requires: [test-backend]
+
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
