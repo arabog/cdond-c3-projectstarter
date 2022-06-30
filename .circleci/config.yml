@@ -47,10 +47,96 @@ jobs:
           paths: [backend/node_modules]
           key: backend-build
 
-            
+
+
+  test-frontend:
+    # Select a Docker image that is compatible with NodeJS
+    docker:
+          - image: circleci/node:13.8.0
+
+    # Write code to run the unit tests
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-test]
+      - run: 
+          name: Test Front-end
+          command: |
+            cd frontend
+            npm install
+            npm run test
+      - save_cache:
+          paths: [frontend/node_modules]
+          key: frontend-test
+
+
+  test-backend:
+    # Select a Docker image that is compatible with NodeJS
+    docker:
+          - image: circleci/node:13.8.0
+
+    # Write code to run the unit tests
+    steps:
+          - checkout
+          - restore_cache:
+              keys: [backend-test]
+          - run: 
+              name: Test Back-end
+              command: |
+                cd backend
+                npm install
+                npm run test
+          - save_cache:
+              paths: [backend/node_modules]
+              key: backend-test
+
+  scan-frontend:
+      # Select a Docker image that is compatible with NodeJS
+      docker:
+        - image: circleci/node:13.8.0
+
+      # Add code to scan the front-end.
+      steps:
+        - checkout
+        - restore_cache:
+            keys: [scan-frontend]
+        - run:
+            name: Frontend scan
+            command: |
+              cd frontend
+              npm install
+              npm audit fix --audit-level=critical
+
+
+  scan-backend:
+      # Select a Docker image that is compatible with NodeJS
+    docker:
+      - image: circleci/node:13.8.0
+
+    # Add code to scan the back-end.
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [scan-backend]
+      - run:
+          name: Backend scan
+          command: |
+            cd backend
+            npm install
+            npm audit fix --force --audit-level=critical
+
+
+# Add code to build/compile the front-end.
+    
 
 workflows:
   project_three_default:
     jobs:
       - build-frontend
       - build-backend
+
+      - test-frontend
+      - test-backend
+
+      - scan-frontend
+      - scan-backend
