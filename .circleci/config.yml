@@ -432,6 +432,8 @@ jobs:
             apk add --update --no-cache tar gzip nodejs npm curl
 
         # Backend smoke test:
+        # Retrieve the back-end IP address that you saved in an earlier job.
+        # Use curl to hit the back-end API's status endpoint
       - run:
           name: Backend smoke test.
           command: |
@@ -441,11 +443,9 @@ jobs:
               --output text)
 
 
-            # Retrieve the back-end IP address that you saved in an earlier job.
             export API_URL="http://${BACKEND_IP}:3030"
             echo $API_URL
 
-            # Use curl to hit the back-end API's status endpoint
             if curl "${API_URL}/api/status" | grep "ok"
             then
                 return 0
