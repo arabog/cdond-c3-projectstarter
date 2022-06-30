@@ -313,6 +313,7 @@ jobs:
     docker:
       - image: python:3.7-alpine3.11
 
+    steps:
       # checkout
       - checkout
 
@@ -367,6 +368,7 @@ jobs:
     # Select a Docker image that is compatible with Ansible.
     docker:
       - image: python:3.7-alpine3.11
+      
     steps:
       - checkout
 
