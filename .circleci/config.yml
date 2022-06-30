@@ -5,8 +5,11 @@ commands:
             
 jobs:
   build-frontend:
+    # Select a Docker image that is compatible with NodeJS
     docker:
       - image: circleci/node:13.8.0
+
+    # Add code to build/compile the front-end.
     steps:
       - checkout
       - restore_cache:
@@ -14,15 +17,21 @@ jobs:
       - run:
           name: Build front-end
           command: |
-            # Your code here
-            exit 1
+            cd frontend
+            npm install
+            npm run build
+
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
 
+
   build-backend:
+    # Select a Docker image that is compatible with NodeJS
     docker:
       - image: circleci/node:13.8.0
+
+    # Add code to build/compile the front-end.
     steps:
       - checkout
       - restore_cache:
@@ -30,8 +39,10 @@ jobs:
       - run:
           name: Back-end build
           command: |
-             # Your code here
-             exit 1
+            cd backend
+            npm install
+            npm run build
+             
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
@@ -39,7 +50,7 @@ jobs:
             
 
 workflows:
-  default:
+  project_three_default:
     jobs:
       - build-frontend
       - build-backend
