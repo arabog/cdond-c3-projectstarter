@@ -528,13 +528,13 @@ workflows:
       - run-migrations:
           requires: [configure-infrastructure]
 
-      # - deploy-frontend:
-      #     requires: [run-migrations]
-      # - deploy-backend:
-      #     requires: [run-migrations]
+      - deploy-frontend:
+          requires: [run-migrations]
+      - deploy-backend:
+          requires: [run-migrations]
 
-      # - smoke-test:
-      #     requires: [deploy-backend, deploy-frontend]
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
 
           # database-postgres.cwcbsy0cvu5u.us-east-1.rds.amazonaws.com
           # database-1.cwcbsy0cvu5u.us-east-1.rds.amazonaws.com
