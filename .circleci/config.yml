@@ -508,11 +508,11 @@ jobs:
       - run:
           name: Update cloudfront distribution
           command: |
-            aws cloudformation deploy \
-              --template-file .circleci/files/cloudfront.yml \
-              --stack-name InitialStack \
-              --parameter-overrides WorkflowID2="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --tags project=udapeople
+              aws cloudformation deploy \
+                --template-file .circleci/files/cloudfront.yml \
+                --stack-name InitialStack \
+                --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
+                --tags project=udapeople
 
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}  
@@ -578,9 +578,9 @@ workflows:
 
       - deploy-infrastructure:
           requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [master]
+          # filters:
+          #   branches:
+          #     only: [master]
 
       - configure-infrastructure:
           requires: [deploy-infrastructure]
