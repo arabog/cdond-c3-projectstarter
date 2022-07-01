@@ -483,6 +483,24 @@ jobs:
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
+  # Promotion Phase:
+  # cloudfront-update:
+  # Select a docker image that is compatible with AWS CLI.
+
+    # Create code that promotes our new front-end to production.
+
+
+    # Install any needed dependencies
+
+    # Use a CloudFormation template to change the origin of your 
+    # CloudFront distribution to the new S3 bucket.
+
+
+    # Cleanup Phase:  you will write code that deletes the 
+    # previous S3 bucket and EC2 instance.
+    # cleanup:
+    
+
     
 
 workflows:
