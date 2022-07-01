@@ -215,7 +215,7 @@ jobs:
           command: |
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:project,Values=udapeople" \
+              --filters "Name=tag:Project,Values=udapeople" \
               --output text >> ~/project/.circleci/ansible/inventory.txt
 
               cat ~/project/.circleci/ansible/inventory.txt
@@ -432,8 +432,7 @@ jobs:
 
     steps:
       - checkout
-      - attach_workspace:
-          at: ~/.circleci/ansible/inventory.txt
+      
 
       # Install dependencies like curl, nodejs, npm, or awscli.
       - run:
@@ -451,7 +450,7 @@ jobs:
           command: |
             export BACKEND_IP=$(aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:project,Values=udapeople" \
+              --filters "Name=instance-state-name,Values=running" \
               --output text)
 
 
@@ -485,26 +484,74 @@ jobs:
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
+
   # Promotion Phase:
-  # cloudfront-update:
+  cloudfront-update:
   # Select a docker image that is compatible with AWS CLI.
+    docker:
+      - image: amazon/aws-cli
 
     # Create code that promotes our new front-end to production.
+    steps:
+      - checkout
 
+      # Install any needed dependencies
+      - run:
+          name: Install dependencies
+          command: |
+            yum install -y tar gzip curl
+            curl -sL https://rpm.nodesource.com/setup_10.x | bash -
+            yum install -y nodejs
 
-    # Install any needed dependencies
+        # Use a CloudFormation template to change the origin of your 
+        # CloudFront distribution to the new S3 bucket.
+      - run:
+          name: Update cloudfront distribution
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/cloudfront.yml \
+              --stack-name InitialStack \
+              --parameter-overrides WorkflowID2="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --tags project=udapeople
 
-    # Use a CloudFormation template to change the origin of your 
-    # CloudFront distribution to the new S3 bucket.
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}  
 
 
     # Cleanup Phase:  you will write code that deletes the 
     # previous S3 bucket and EC2 instance.
-    # cleanup:
+    cleanup:
+      docker:
+        - image: amazon/aws-cli
+
+      steps:
+        - checkout
+
+        - run:
+            name: Get old stack workflow id
+            command: |
+              export OldWorkflowID=$(aws cloudformation \
+                list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+                --no-paginate --output text)
+              echo OldWorkflowID: "${OldWorkflowID}"
+              echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
+              export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+                --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
+              echo Stack names: "${STACKS[@]}"
+
+        - run:
+            name: Remove old stacks and files
+            command: |
+              if [[ "$CurrentWorkflowID" != "$OldWorkflowID" ]]
+              then
+                aws s3 rm "s3://udapeoplefrontend${OldWorkflowID}" --recursive
+                aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
+                aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
+              else
+                echo "$OldWorkflowID==$CurrentWorkflowID => nothing needs to be done..."
+              fi
 
 
-
-# 
 
     
 workflows:
