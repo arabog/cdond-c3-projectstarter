@@ -283,19 +283,19 @@ jobs:
     # Checkout code from git and restore the backend cache.
     steps:
       - checkout
-      # - restore_cache:
-      #     keys: [backend-build]
+      - restore_cache:
+          keys: [backend-build]
 
-      - attach_workspace:
-          at: ~/.circleci/ansible/inventory.txt
+      # - attach_workspace:
+      #     at: ~/.circleci/ansible/inventory.txt
 
-      - run:
-          name: Install AWS CLI dependencies
-          command: |
-            sudo apt-get update && sudo apt-get install -yy less
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
+      # - run:
+      #     name: Install AWS CLI dependencies
+      #     command: |
+      #       sudo apt-get update && sudo apt-get install -yy less
+      #       curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      #       unzip awscliv2.zip
+      #       sudo ./aws/install
 
       # Run migrations
       - run:
