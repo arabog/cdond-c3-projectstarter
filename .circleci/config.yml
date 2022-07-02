@@ -547,6 +547,8 @@ jobs:
     # Create code that promotes our new front-end to production.
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/
 
       # Install any needed dependencies
       # apk goes with python?
@@ -561,13 +563,22 @@ jobs:
       - run:
           name: Update cloudfront distribution
           command: |
-              aws cloudformation deploy \
-                --template-file .circleci/files/cloudfront.yml \
-                --stack-name InitialStack \
-                --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
-                --tags project=udapeople
+            export OldWorkflowID = $(aws cloudformation \
+              list-exports --query "Exports[?Name==\'WorkflowID\'].Value" \
+              --no-paginate --output text)
 
-              echo CIRCLE_WORKFLOW_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
+            echo $OldWorkflowID >> ~/OldWorkflowID.txt
+            cat ~/OldWorkflowID.txt
+
+
+            aws cloudformation deploy \
+              --template-file .circleci/files/cloudfront.yml \
+              --stack-name "InitialStack-${OldWorkflowID}" \
+              --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --tags project=udapeople
+
+            echo OldWorkflowID: "${WorkflowID}"
+            echo Current Workflow Id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}  
@@ -581,6 +592,8 @@ jobs:
 
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/
 
       - run:
           name: Get old stack workflow id and delete
@@ -590,7 +603,7 @@ jobs:
               --no-paginate --output text)
 
             echo OldWorkflowID: "${OldWorkflowID}"
-            echo CIRCLE_WORKFLOW_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
+            echo Current Workflow Id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
             export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
               --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
@@ -652,8 +665,8 @@ workflows:
 
       - cloudfront-update:
           requires: [smoke-test]
-      # - cleanup:
-      #     requires: [cloudfront-update]
+      - cleanup:
+          requires: [cloudfront-update]
 
 
 
