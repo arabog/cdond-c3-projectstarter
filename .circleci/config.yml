@@ -666,7 +666,7 @@ workflows:
       # - cleanup:
       #     requires: [cloudfront-update]
 
-      # - cloudfront-update
+      - cloudfront-update
       - cleanup
 
 
