@@ -68,3 +68,6 @@ node_modules
 
 .env
 dist
+
+prometheus-2.19.0.linux-amd64.tar.gz
+alertmanager-0.24.0.linux-amd64.tar.gz
