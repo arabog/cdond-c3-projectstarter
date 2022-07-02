@@ -622,7 +622,10 @@ jobs:
               echo "----------------No need to clean up-----------------"
             fi
   
-            echo Stack names: "${STACKS[@]}"
+            export STACK=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+              --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
+
+            echo Stack names: "${STACK[@]}"
 
       - notify_slack_error
       - notify_slack_pass
