@@ -575,7 +575,7 @@ jobs:
               --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
               --tags project=udapeople
 
-            echo OldWorkflowID: "${WorkflowID}"
+            echo OldWorkflowID: "${OldWorkflowID}"
             echo Current Workflow Id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
       - revert-migrations:
@@ -622,10 +622,6 @@ jobs:
               echo "----------------No need to clean up-----------------"
             fi
   
-            export STACK=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-              --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
-
-            echo Stack names: "${STACK[@]}"
 
       - notify_slack_error
       - notify_slack_pass
@@ -669,6 +665,7 @@ workflows:
       # - cleanup:
       #     requires: [cloudfront-update]
 
+      - cloudfront-update
       - cleanup
 
 
