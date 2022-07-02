@@ -611,7 +611,7 @@ jobs:
 
             echo Stack names: "${STACKS[@]}"
 
-            if [[ "${CIRCLE_WORKFLOW_ID:0:7}" =~ "${OldWorkflowID}" ]]
+            if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
 
             then
               echo OldWorkflowID: "${OldWorkflowID}" != "$CIRCLE_WORKFLOW_ID" deleting Old Stack
