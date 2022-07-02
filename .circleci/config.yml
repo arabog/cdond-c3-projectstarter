@@ -9,12 +9,14 @@ commands:
   notify_slack_error:
     steps:
       - slack/notify:
+          mentions: "@hugb"
           event: fail
           template: basic_fail_1
 
   notify_slack_pass:
     steps:
       - slack/notify:
+          mentions: "@hugb"
           event: pass
           template: basic_success_1
 
@@ -201,6 +203,7 @@ jobs:
             npm install
             npm audit fix --audit-level=critical
 
+
   # 4. Alerts
 
   # 1. Infrastructure Phase
@@ -263,8 +266,6 @@ jobs:
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
-      - notify_slack_error
-      - notify_slack_pass
 
   # 1.b. Configure Infrastructure
   configure-infrastructure:
@@ -305,9 +306,6 @@ jobs:
           # Destroy-environment on fail
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-
-      - notify_slack_error
-      - notify_slack_pass
 
 
   # 2. Deploy Phase
@@ -351,6 +349,7 @@ jobs:
         # destory env
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
           
   # 2.b. Deploy Frontend
   deploy-frontend:
@@ -532,7 +531,7 @@ jobs:
 
   # 5. Promotion Phase:
   cloudfront-update:
-  # Select a docker image that is compatible with AWS CLI.
+    # Select a docker image that is compatible with AWS CLI.
     docker:
       - image: amazon/aws-cli
 
