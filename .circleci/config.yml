@@ -541,10 +541,10 @@ jobs:
       - checkout
 
       # Install any needed dependencies
+      # apk goes with python?
       - run:
           name: Install dependencies
           command: |
-              # apk goes with python?
             apk add --update --no-cache tar gzip nodejs npm curl
             pip install awscli
 
