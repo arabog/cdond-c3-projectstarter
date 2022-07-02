@@ -615,7 +615,8 @@ jobs:
               # change ds:
               # aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
               # to:
-              # aws s3 rm "s3://${OldWorkflowID}" --recursive
+              
+              aws s3 rm "s3://${OldWorkflowID}" --recursive
               
               aws cloudformation delete-stack --stack-name "${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "${OldWorkflowID}"
