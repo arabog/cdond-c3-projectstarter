@@ -475,7 +475,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-        at: ~/
+          at: ~/
 
       # Install dependencies like curl, nodejs, npm, or awscli.
       - run:
