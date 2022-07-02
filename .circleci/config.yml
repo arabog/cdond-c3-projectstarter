@@ -611,7 +611,7 @@ jobs:
             # echo "${CIRCLE_WORKFLOW_ID:0:7}"
             # echo "${OldWorkflowID}" 
 
-            if [[ "${CIRCLE_WORKFLOW_ID:0:7}" =~ "${OldWorkflowID}"]]
+            if [[ "${CIRCLE_WORKFLOW_ID:0:7}" =~ "${OldWorkflowID}" ]]
 
             then
               echo "-----------------Delete Confirmed----------------"
