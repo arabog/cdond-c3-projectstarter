@@ -2,6 +2,10 @@
 
 # https://aws.amazon.com/getting-started/hands-on/create-connect-postgresql-db/
 
+# https://github.com/CircleCI-Public/slack-orb/wiki/Setup
+
+# https://migrant-group.slack.com/archives/C0155UA7V5K
+
 version: 2.1
 
 orbs:
@@ -593,7 +597,9 @@ jobs:
 
             echo Stack names: "${STACKS[@]}"
 
-            
+      - run:
+          name: Remove old stacks and files
+          command: |
             if [[ "${CIRCLE_WORKFLOW_ID:0:7}" =~ "${OldWorkflowID}" ]]
 
             then
