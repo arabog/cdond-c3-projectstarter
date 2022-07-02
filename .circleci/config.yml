@@ -598,12 +598,10 @@ jobs:
           name: Get old stack workflow id and delete
           command: |
             export OldWorkflowID=$(aws cloudformation list-exports \
-
               --query "Exports[?Name==\`WorkflowID\`].Value.split("-")[1]" \
-              
               --no-paginate --output text)
 
-            echo OldWorkflowID
+            echo OldWorkflowID: "${OldWorkflowID}"
 
 
             # echo Current Workflow Id: "${CIRCLE_WORKFLOW_ID:0:7}"
