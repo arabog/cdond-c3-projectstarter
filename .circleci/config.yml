@@ -533,7 +533,8 @@ jobs:
   cloudfront-update:
     # Select a docker image that is compatible with AWS CLI.
     docker:
-      - image: amazon/aws-cli
+      # - image: amazon/aws-cli
+      - image: python:3.7-alpine3.11
 
     # Create code that promotes our new front-end to production.
     steps:
@@ -543,6 +544,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+              # apk goes with python?
             apk add --update --no-cache tar gzip nodejs npm curl
             pip install awscli
 
@@ -652,3 +654,10 @@ workflows:
 
 # db
 # name, pass: postgres
+
+# initial cfront:
+# https://dnk5hfvznglyf.cloudfront.net
+
+# new cfront:
+
+udapeople-h1u2g3b4567
