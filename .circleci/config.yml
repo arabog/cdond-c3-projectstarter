@@ -621,8 +621,8 @@ jobs:
 
               aws s3 rm "s3://${OldWorkflowID}" --recursive
               
-              aws cloudformation delete-stack --stack-name "udapeople-${OldWorkflowID}"
-              aws cloudformation delete-stack --stack-name "udapeople-${OldWorkflowID}"
+              aws cloudformation delete-stack --stack-name "${OldWorkflowID}"
+              aws cloudformation delete-stack --stack-name "${OldWorkflowID}"
             else
               echo "----------------No need to clean up-----------------"
             fi
