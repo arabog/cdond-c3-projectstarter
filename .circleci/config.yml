@@ -584,15 +584,6 @@ jobs:
 
     # 6. Cleanup Phase:  you will write code that deletes the 
     # previous S3 bucket and EC2 instance.
-  # cleanup:
-  #   docker:
-  #     - image:  amazon/aws-cli
-  #   steps:
-  #     - checkout
-  #     - run: yum install -y tar gzip
-  #     - attach_workspace:
-  #         at: ~/
-
   cleanup:
     docker:
       - image:  amazon/aws-cli
@@ -615,9 +606,10 @@ jobs:
             if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
             then
               echo "-----------------Delete Confirmed----------------"
-              # aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
 
+              # aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
               # aws s3 rm "s3://${OldWorkflowID}" --recursive
+
               aws cloudformation delete-stack --stack-name "${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "${OldWorkflowID}"
             else
@@ -666,49 +658,3 @@ workflows:
       - cleanup:
           requires: [cloudfront-update]
 
-      # - cloudfront-update
-      # - cleanup:
-      #     requires: [cloudfront-update]
-# ?
-
-
-
-# db
-# name, pass: postgres
-
-# initial cfront:
-# https://dnk5hfvznglyf.cloudfront.net
-
-# new cfront:
-
-# aws cloudformation deploy --template-file cloudfront.yml --stack-name InitialStack --parameter-overrides WorkflowID=udapeople-kk1j287dhjppmz4370
-
-# - run:
-#           name: Get old stack workflow id
-#           command: |
-#             export OldWorkflowID=$(aws cloudformation list-exports \
-#             --query "Exports[?Name==\`WorkflowID\`].Value" --no-paginate --output text)
-
-#             echo OldWorkflowID: "${OldWorkflowID}"
-#             echo Current Workflow Id: "${CIRCLE_WORKFLOW_ID:0:7}"
-
-#             export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-#               --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
-
-#             echo Stack names: "${STACKS[@]}"
-
-#             if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
-#             then
-#               echo "-----------------Delete Confirmed----------------"
-#               # change ds:
-#               # aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
-#               # to:
-
-
-#               # aws s3 rm "s3://$OldWorkflowID" --recursive
-              
-#               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
-#               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
-#             else
-#               echo "----------------No need to clean up-----------------"
-#             fi
