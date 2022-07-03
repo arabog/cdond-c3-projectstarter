@@ -1,9 +1,10 @@
 [URL01]:
-https://github.com/arabog/udacity3
+https://github.com/arabog/cdond-c3-projectstarter
 
 
 Provide the public URL for your S3 Bucket (aka, your front-end). [URL02]
  [URL02]
-https://udapeople-b50c6d8.s3.amazonaws.com/index.html#/employees
+http://udapeople-d7389f7.s3-website-us-east-1.amazonaws.com
+
 
 
