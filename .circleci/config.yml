@@ -400,7 +400,7 @@ workflows:
       - scan-frontend:
           requires: [build-frontend]   
       - scan-backend:
-          context: cicd project
+          # context: cicd project
           requires: [build-backend] 
       - deploy-infrastructure:
           requires: [scan-frontend,scan-backend,test-frontend,test-backend]   
