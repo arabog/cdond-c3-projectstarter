@@ -43,7 +43,7 @@ commands:
           command: |
             echo "Destroying environment: << parameters.workflow_id >>"
 
-            aws s3 rm s3://udapeoplefrontend<< parameters.workflow_id >> --recursive
+            # aws s3 rm s3://udapeoplefrontend<< parameters.workflow_id >> --recursive
 
             aws cloudformation delete-stack \
               --stack-name udapeople-backend--${CIRCLE_WORKFLOW_ID:0:7}"
@@ -609,12 +609,6 @@ jobs:
             if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
             then
               echo "-----------------Delete Confirmed----------------"
-
-              # aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
-              # aws s3 rm "s3://${OldWorkflowID}" --recursive
-
-              # aws cloudformation delete-stack --stack-name "${OldWorkflowID}"
-              # aws cloudformation delete-stack --stack-name "${OldWorkflowID}"
 
               echo "$OldWorkflowID" != "$WorkFlowID" deleting Old Stack
               aws s3 rm "s3://udapeople-$OldWorkflowID" --recursive
