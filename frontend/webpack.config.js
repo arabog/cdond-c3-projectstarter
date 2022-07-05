@@ -36,21 +36,21 @@ module.exports = {
       assets: path.resolve(__dirname, 'src/assets/'),
     },
   },
-  // module: {
-  //   rules: [
-  //     // .ts, .tsx
-  //     {
-  //       test: /\.tsx?$/,
-  //       use: [
-  //         !isProduction && {
-  //           loader: 'babel-loader',
-  //           options: {
-  //             plugins: ['react-hot-loader/babel'],
-  //           },
-  //         },
-  //         'ts-loader',
-  //       ].filter(Boolean),
-  //     },
+  module: {
+    rules: [
+      // .ts, .tsx
+      {
+        test: /\.tsx?$/,
+        use: [
+          !isProduction && {
+            loader: 'babel-loader',
+            options: {
+              plugins: ['react-hot-loader/babel'],
+            },
+          },
+          'ts-loader',
+        ].filter(Boolean),
+      },
       // locale css
       {
         test: /\.local.css$/,
