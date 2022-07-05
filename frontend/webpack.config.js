@@ -5,7 +5,7 @@ require('dotenv').config();
 
 // variables
 var isProduction =
-  process.argv.indexOf('-p') >= 0 || process.env.NODE_ENV === 'production';
+  process.argv.indexOf('-p') >= 0 || process.env.NODE_ENV === 'development';
 var sourcePath = path.join(__dirname, './src');
 var outPath = path.join(__dirname, './dist');
 
